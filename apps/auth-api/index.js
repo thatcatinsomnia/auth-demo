@@ -1,33 +1,13 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 
-import { generateAccessToken, generateRefreshToken } from './token.js';
-
-const users = [
-  {
-    id: 1,
-    email: 'foo@example.com',
-    name: 'foo',
-    password: '1234'
-  },
-  {
-    id: 2,
-    email: 'bar@example.com',
-    name: 'bar',
-    password: '1234'
-  },
-  {
-    id: 3,
-    email: '1234@example.com',
-    name: '1234',
-    password: '1234'
-  }
-];
+import { generateAccessToken, generateRefreshToken, REFRESH_TOKEN_SECRET } from './token.js';
+import { getUserByEmail, getUserById, invalidRefreshTokens } from './db.js';
 
 const app = express();
 
 app.use(express.json());
 
-// respond with "hello world" when a GET request is made to the homepage
 app.get('/', (req, res) => {
   res.send('auth api')
 });
@@ -41,7 +21,7 @@ app.post('/sign-in', async (req, res, next) => {
     return res.status(400).json({ message: 'Email and password are required !!' });
   }
 
-  const found = users.find(user => user.email === email);
+  const found = getUserByEmail(email);
 
   if (!found) {
     return res.status(404).json({
@@ -70,6 +50,36 @@ app.post('/sign-in', async (req, res, next) => {
     accessToken,
     refreshToken
   });
+});
+
+app.post('/refresh', async (req, res, next) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(422).json({ message: 'Refresh token is required !!' });
+  }
+
+  if (invalidRefreshTokens.includes(refreshToken)) {
+    return res.status(401).json({ message: 'unauthorized' });
+  }  
+
+  if (!jwt.verify(refreshToken, REFRESH_TOKEN_SECRET)) {
+    return res.status(401).json({ message: 'token invalid or expired' });
+  }
+
+  const { userId }  = jwt.decode(refreshToken, REFRESH_TOKEN_SECRET);
+
+  const user = getUserById(userId);
+
+  if (!user) {
+    return res.status(404).json({ message: 'user not found' });
+  }
+
+  const { password, ...payload } = user;
+
+  const accessToken = generateAccessToken(payload);
+
+  return res.status(200).json({ accessToken });
 });
 
 app.listen(PORT, () => {

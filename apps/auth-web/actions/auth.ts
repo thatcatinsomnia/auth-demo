@@ -2,11 +2,11 @@
 
 import { AxiosError } from 'axios';
 import axios from 'axios';
-import { RedirectType, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
 const getUserFromDB = async (email: string, password: string) => {
-  const url = process.env.AUTH_URL + '/sign-in';
+  const url = process.env.AUTH_API + '/sign-in';
 
   try {
     const res = await axios.post(url, {
@@ -30,17 +30,19 @@ export default async function signIn(formData: FormData) {
 
     if (user) {
       cookies().set('access_token', user.accessToken, {
-        httpOnly: isProduction,
+        httpOnly: true,
         secure: isProduction
       });
 
       cookies().set('refresh_token', user.refreshToken, {
-        httpOnly: isProduction,
+        httpOnly: true,
         secure: isProduction
       });
       
     }
   } catch (error) {
+    console.log(error);
+
     let errorMsg = 'Something error when sign in';
 
     if (error instanceof AxiosError && error.response?.status === 400) {
@@ -51,7 +53,6 @@ export default async function signIn(formData: FormData) {
       errorMsg = 'Email not exist';
     }
 
-    console.log(error)
     return {
       error: errorMsg
     };
@@ -59,5 +60,5 @@ export default async function signIn(formData: FormData) {
 
   // must call ouside try catch block
   // documents: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#redirecting
-  redirect(process.env.WEB_URL!);
+  redirect(process.env.HOME_PAGE_URL!);
 }
