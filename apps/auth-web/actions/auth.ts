@@ -1,35 +1,55 @@
 "use server";
 
-import { AxiosError } from 'axios';
-import axios from 'axios';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
-const getUserFromDB = async (email: string, password: string) => {
-  const url = process.env.AUTH_API + '/sign-in';
+const authApi = process.env.AUTH_API!;
+const homePageUrl = process.env.HOME_PAGE_URL!;
+const isProduction = process.env.NODE_ENV === 'production';
 
-  try {
-    const res = await axios.post(url, {
+if (!authApi) {
+  throw new Error('env AUTH_API must be set 🚧');
+}
+
+if (!homePageUrl) {
+  throw new Error('env HOME_PAGE_URL must be set 🚧');
+}
+
+async function getUserFromDB({ email, password }: { email: string, password: string }) {
+  const signInApi = authApi + '/api/sign-in';
+
+  console.log(signInApi);
+  const res = await fetch(signInApi, {
+    method: 'post',
+    body: JSON.stringify({
       email,
       password
-    });
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 
-    return res.data;
-  } catch (error) {
-    throw error;
+  const data = await res.json();
+
+  if (res.status !== 200) {
+    throw new Error(data.error);
   }
+
+  return data;
 };
 
-export default async function signIn(formData: FormData) {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+export async function signIn(formData: FormData) {
   let user = null;
 
   try {
-    user = await getUserFromDB(formData.get('email') as string, formData.get('password') as string);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    user = await getUserFromDB({ email, password });
 
     if (user) {
-      cookies().set('access_token', user.accessToken, {
+      cookies().set('session', user.accessToken, {
         httpOnly: true,
         secure: isProduction
       });
@@ -41,24 +61,12 @@ export default async function signIn(formData: FormData) {
       
     }
   } catch (error) {
-    console.log(error);
-
-    let errorMsg = 'Something error when sign in';
-
-    if (error instanceof AxiosError && error.response?.status === 400) {
-      errorMsg = 'Email and password fields are required !!!';
-    } else if (error instanceof AxiosError && error.response?.status === 401) {
-      errorMsg = 'Password not correct';
-    } else if (error instanceof AxiosError && error.response?.status === 404) {
-      errorMsg = 'Email not exist';
-    }
-
     return {
-      error: errorMsg
+      error: (error as Error)?.message
     };
   } 
 
   // must call ouside try catch block
   // documents: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#redirecting
-  redirect(process.env.HOME_PAGE_URL!);
+  redirect(homePageUrl);
 }

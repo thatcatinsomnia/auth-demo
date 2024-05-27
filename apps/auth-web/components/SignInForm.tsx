@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import signIn from '#/actions/auth';
+import { signIn } from '#/actions/auth';
 
 export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);

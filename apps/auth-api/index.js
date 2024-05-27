@@ -14,24 +14,24 @@ app.get('/', (req, res) => {
 
 const PORT = 3333;
 
-app.post('/sign-in', async (req, res, next) => {
+app.post('/api/sign-in', async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required !!' });
+    return res.status(400).json({ error: 'Email and password are required !!' });
   }
 
   const found = getUserByEmail(email);
 
   if (!found) {
     return res.status(404).json({
-      message: 'user not exist'
+      error: 'user not exist'
     });
   }
 
   if (found.password !== password) {
     return res.status(401).json({
-      message: 'password is incorrect'
+      error: 'password is incorrect'
     });
   }
 
@@ -43,28 +43,25 @@ app.post('/sign-in', async (req, res, next) => {
 
   const refreshToken = generateRefreshToken(found.id);
 
-  return res.json({
-    userId: found.id,
-    name: found.name,
-    email: found.email,
+  return res.status(200).json({
     accessToken,
     refreshToken
   });
 });
 
-app.post('/refresh', async (req, res, next) => {
+app.post('/api/refresh', async (req, res, next) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return res.status(422).json({ message: 'Refresh token is required !!' });
+    return res.status(422).json({ error: 'Refresh token is required !!' });
   }
 
   if (invalidRefreshTokens.includes(refreshToken)) {
-    return res.status(401).json({ message: 'unauthorized' });
+    return res.status(401).json({ error: 'unauthorized' });
   }  
 
   if (!jwt.verify(refreshToken, REFRESH_TOKEN_SECRET)) {
-    return res.status(401).json({ message: 'token invalid or expired' });
+    return res.status(401).json({ error: 'token invalid or expired' });
   }
 
   const { userId }  = jwt.decode(refreshToken, REFRESH_TOKEN_SECRET);
@@ -72,12 +69,14 @@ app.post('/refresh', async (req, res, next) => {
   const user = getUserById(userId);
 
   if (!user) {
-    return res.status(404).json({ message: 'user not found' });
+    return res.status(404).json({ error: 'user not found' });
   }
 
   const { password, ...payload } = user;
 
   const accessToken = generateAccessToken(payload);
+
+  console.log('issue new token: ' + accessToken);
 
   return res.status(200).json({ accessToken });
 });

@@ -1,4 +1,4 @@
-import { getSession } from '#/helpers/session';
+import { getSession } from '#/libs/auth';
 
 export default async function Me() {
   const user = await getSession();
