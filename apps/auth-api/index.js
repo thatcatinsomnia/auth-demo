@@ -27,13 +27,13 @@ app.post('/api/sign-in', async (req, res, next) => {
 
   if (!found) {
     return res.status(404).json({
-      error: 'user not exist'
+      error: 'email or password not correct.'
     });
   }
 
   if (found.password !== password) {
     return res.status(401).json({
-      error: 'password is incorrect'
+      error: 'email or password not correct.'
     });
   }
 

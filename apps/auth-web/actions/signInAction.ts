@@ -15,6 +15,11 @@ if (!homePageUrl) {
   throw new Error('env HOME_PAGE_URL must be set 🚧');
 }
 
+type FormState = {
+  isError: boolean;
+  error?: string;
+};
+
 async function getUserFromDB({ email, password }: { email: string, password: string }) {
   const signInApi = authApi + '/api/sign-in';
 
@@ -38,7 +43,7 @@ async function getUserFromDB({ email, password }: { email: string, password: str
   return data;
 };
 
-export async function signIn(formData: FormData) {
+export async function signIn(prevState: FormState, formData: FormData) {
   let user = null;
 
   try {
@@ -47,25 +52,28 @@ export async function signIn(formData: FormData) {
 
     user = await getUserFromDB({ email, password });
 
-    if (user) {
-      cookies().set('session', user.accessToken, {
-        httpOnly: true,
-        secure: isProduction
-      });
-
-      cookies().set('refresh_token', user.refreshToken, {
-        httpOnly: true,
-        secure: isProduction
-      });
-      
+    if (!user) {
+      throw new Error('Eamil or password not correct');
     }
+
+    cookies().set('session', user.accessToken, {
+      httpOnly: true,
+      secure: isProduction
+    });
+
+    cookies().set('refresh_token', user.refreshToken, {
+      httpOnly: true,
+      secure: isProduction
+    });
+
+    return { 
+      isError: false,
+      error: undefined
+    };
   } catch (error) {
     return {
+      isError: true,
       error: (error as Error)?.message
     };
   } 
-
-  // must call ouside try catch block
-  // documents: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#redirecting
-  redirect(homePageUrl);
 }
