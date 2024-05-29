@@ -1,4 +1,5 @@
 import express from 'express';
+import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
 
 import { generateAccessToken, generateRefreshToken, REFRESH_TOKEN_SECRET } from './token.js';
@@ -7,12 +8,11 @@ import { getUserByEmail, getUserById, invalidRefreshTokens } from './db.js';
 const app = express();
 
 app.use(express.json());
+app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   res.send('auth api')
 });
-
-const PORT = 3333;
 
 app.post('/api/sign-in', async (req, res, next) => {
   const { email, password } = req.body;
@@ -76,11 +76,11 @@ app.post('/api/refresh', async (req, res, next) => {
 
   const accessToken = generateAccessToken(payload);
 
-  console.log('issue new token: ' + accessToken);
-
   return res.status(200).json({ accessToken });
 });
 
+const PORT = 3333;
+
 app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

@@ -18,7 +18,6 @@ if (!homePageUrl) {
 async function getUserFromDB({ email, password }: { email: string, password: string }) {
   const signInApi = authApi + '/api/sign-in';
 
-  console.log(signInApi);
   const res = await fetch(signInApi, {
     method: 'post',
     body: JSON.stringify({

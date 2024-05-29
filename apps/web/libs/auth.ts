@@ -15,7 +15,6 @@ export async function decrypt(token: string) {
 
     return { ...payload, accessToken: token };
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }
