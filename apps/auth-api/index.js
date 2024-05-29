@@ -11,7 +11,9 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('auth api')
+  return res.json({
+    message: 'JWT auth api v1'
+  })
 });
 
 app.post('/api/sign-in', async (req, res, next) => {
