@@ -16,6 +16,7 @@ if (!homePageUrl) {
 }
 
 type FormState = {
+  isSuccess: boolean;
   isError: boolean;
   error?: string;
 };
@@ -67,11 +68,13 @@ export async function signIn(prevState: FormState, formData: FormData) {
     });
 
     return { 
+      isSuccess: true,
       isError: false,
       error: undefined
     };
   } catch (error) {
     return {
+      isSuccess: false,
       isError: true,
       error: (error as Error)?.message
     };

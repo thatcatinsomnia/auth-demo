@@ -12,7 +12,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="mt-36 px-6 mx-auto max-w-[420px]">
+    <div className="mt-28 px-6 mx-auto max-w-[400px]">
       <SignInForm />
     </div>
   );

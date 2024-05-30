@@ -1,9 +1,9 @@
 import express from 'express';
 import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
-
 import { generateAccessToken, generateRefreshToken, REFRESH_TOKEN_SECRET } from './token.js';
 import { getUserByEmail, getUserById, invalidRefreshTokens } from './db.js';
+import { sleep } from './helper.js';
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(morgan('dev'));
 app.get('/', (req, res) => {
   return res.json({
     message: 'JWT auth api v1'
-  })
+  });
 });
 
 app.post('/api/sign-in', async (req, res, next) => {
