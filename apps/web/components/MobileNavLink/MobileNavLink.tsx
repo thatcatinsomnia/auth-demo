@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {twMerge} from 'tailwind-merge';
+import { twMerge } from 'tailwind-merge';
 
 export default function MobileNavLink({ href, label, onClick }: { 
   href: string; 
@@ -14,8 +14,8 @@ export default function MobileNavLink({ href, label, onClick }: {
   return (
     <Link 
       className={twMerge(
-        "py-5 block text-center text-3xl transition-colors",
-        current === href ? "bg-neutral-800 text-white font-medium" : "hover:bg-white/10"
+        "py-5 block text-center text-lg transition-colors",
+        current === href ? "text-white bg-slate-800 font-medium" : "hover:bg-white/10"
       )}
       href={href}
       onClick={onClick}

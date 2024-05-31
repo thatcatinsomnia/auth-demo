@@ -69,5 +69,5 @@ function applySetCookie(req: Request, res: NextResponse) {
 }
 
 export const config = {
-  matcher: ['/me']
+  matcher: ['/profile']
 };

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { jwtVerify } from 'jose';
+import { decodeJwt, jwtVerify } from 'jose';
 import { signInUrl, authApi, accessTokenSecret } from '#/constants/contants';
 
 type JwtData = {
@@ -20,17 +20,29 @@ export async function decrypt(token: string) {
 }
 
 export async function getSession() {
-  const session = cookies().get("session")?.value;
+  const session = cookies().get('session')?.value;
 
   if (!session) {
-    return null
+    return undefined
   }
 
   return await decrypt(session);
 }
 
-export const hasSession = function() {
+export function hasSession() {
   return cookies().get('session')?.value;
+}
+
+export function getUserName() {
+  const session = cookies().get('session')?.value;
+  
+  if (!session) {
+    return undefined;
+  }
+
+  const { name } = decodeJwt<JwtData>(session);
+
+  return name;
 }
 
 export async function refreshAccessToken() {
@@ -53,7 +65,7 @@ export async function refreshAccessToken() {
 
     const { accessToken } = await res.json();
 
-    return accessToken;
+    return accessToken as string;
   } catch (error) {
     console.log('refresh access token error 😱');
     console.log(error);
