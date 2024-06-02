@@ -15,7 +15,7 @@ export default function MobileNavLink({ href, label, onClick }: {
     <Link 
       className={twMerge(
         "py-5 block text-center text-lg transition-colors",
-        current === href ? "text-white bg-slate-800 font-medium" : "hover:bg-white/10"
+        current === href ? "text-white bg-pink-500 dark:bg-slate-800 font-medium" : "hover:bg-pink-300/50 dark:hover:bg-white/10"
       )}
       href={href}
       onClick={onClick}

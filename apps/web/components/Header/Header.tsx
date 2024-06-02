@@ -8,7 +8,7 @@ import { hasSession } from '#/libs/auth';
 
 export default async function Header() {
   return (
-    <header className="hidden px-8 w-full h-[80px] md:flex items-center gap-6 dark:text-white border-b border-slate-300/10">
+    <header className="hidden px-8 w-full h-[80px] md:flex items-center gap-6 border-b border-gray-300/60 dark:text-white dark:border-slate-300/10">
       <HeaderLogo />
 
       <div className={"flex flex-1 items-center justify-end gap-1"}>
@@ -26,7 +26,9 @@ export default async function Header() {
           {hasSession() ? (
             <Avatar />
           ) : (
-            <Link href={process.env.SIGN_IN_URL!} className="px-4 py-1 text-nowrap border hover:bg-pink-500 transition-colors rounded">
+            <Link 
+              href={process.env.SIGN_IN_URL!} 
+              className="px-4 py-1 text-nowrap text-white bg-pink-500 hover:bg-pink-600 transition-colors rounded shadow">
               Sign In
             </Link>
           )}

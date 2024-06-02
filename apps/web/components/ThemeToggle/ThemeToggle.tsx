@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
 import { IconSun, IconMoon } from '@tabler/icons-react';
+import useTheme from '#/hooks/useTheme';
 
 export default function ThemeToggle() {
-  const isDarkMode = true;
+  const { preferDark, toggleTheme } = useTheme();
 
   return (
-    <button className="size-10 md:size-12 hover:dark:bg-white/10 rounded grid place-items-center transition-colors">
-      {isDarkMode ? <IconMoon /> : <IconSun />}
+    <button className="size-10 md:size-12 hover:bg-pink-100 dark:hover:bg-white/10 rounded grid place-items-center transition-colors" onClick={toggleTheme}>
+      {preferDark ? <IconMoon /> : <IconSun />}
     </button>
   );
 }
