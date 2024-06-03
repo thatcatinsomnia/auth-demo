@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { IconMenu, IconX } from '@tabler/icons-react';
 import MobileNavLink from '#/components/MobileNavLink';
 import ThemeToggle from '#/components/ThemeToggle';
 import { links } from '#/constants/links';
+import SignOutButton from '../SignOutButton/SignOutButton';
 
 export default function MobileHamburger({ username }: { username?: string }) {
   const [opened, setOpened] = useState(false);
@@ -17,7 +17,7 @@ export default function MobileHamburger({ username }: { username?: string }) {
       </button>
 
       {opened && (
-        <div className="fixed inset-0 bg-pink-200 dark:bg-pink-500 md:hidden">
+        <div className="fixed inset-0 flex flex-col bg-pink-200 dark:bg-pink-500 md:hidden">
           <div className="p-6 w-full flex items-center justify-between">
             <ThemeToggle />
             <button className="size-10 grid place-items-center top-6 right-6 hover:bg-pink-100 dark:hover:bg-white/10 transition-colors rounded" onClick={() => setOpened(false)}><IconX /></button>
@@ -35,7 +35,13 @@ export default function MobileHamburger({ username }: { username?: string }) {
             ))}
           </ul>
 
-          <p>{username ? 'Sign Out' : 'Sign In'}</p>
+          <div className="mt-auto mx-auto mb-8 px-6 w-full max-w-72">
+            {username ? (
+              <SignOutButton className="dark:bg-slate-700 dark:hover:bg-slate-800" />
+            ) : (
+              'Sign In'
+            )}
+          </div>
         </div>
       )}
     </div>
