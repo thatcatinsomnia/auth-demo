@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "#/context/ThemeContext";
 import Header from '#/components/Header';
 import MobileHeader from "#/components/MobileHeader";
 import ThemeScript from "#/components/ThemeScript/ThemeScript";
@@ -26,12 +27,14 @@ export default function RootLayout({
       </head>
 
       <body className={`transition-colors bg-pink-50 text-slate-800 dark:text-white dark:bg-[#101720] ${inter.className}`}>
-        <Header />
-        <MobileHeader />
+        <ThemeProvider>
+          <Header />
+          <MobileHeader />
 
-        <div>
-          {children}
-        </div>
+          <div>
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

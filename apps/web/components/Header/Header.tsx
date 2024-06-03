@@ -6,7 +6,8 @@ import Avatar from '#/components/Avatar';
 import { links } from '#/constants/links';
 import { hasSession } from '#/libs/auth';
 
-export default async function Header() {
+export default function Header() {
+
   return (
     <header className="hidden px-8 w-full h-[80px] md:flex items-center gap-6 border-b border-gray-300/60 dark:text-white dark:border-slate-300/10">
       <HeaderLogo />
